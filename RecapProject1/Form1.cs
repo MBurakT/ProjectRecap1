@@ -16,5 +16,70 @@ namespace RecapProject1
         {
             InitializeComponent();
         }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            ListCategories();
+            ListProducts();
+        }
+
+        private void cbxCategory_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            try
+            {
+                ListProductsByCategories(Convert.ToInt32(cbxCategory.SelectedValue));
+            }
+            catch (Exception)
+            {
+
+            }
+        }
+
+        private void tbxSearch_TextChanged(object sender, EventArgs e)
+        {
+            string key = tbxSearch.Text;
+            if (string.IsNullOrEmpty(key))
+            {
+                ListProducts();
+            }
+            else
+            {
+                ListProductsByProductName(key);
+            }
+        }
+
+        private void ListProducts()
+        {
+            using (NorthwindContext context = new NorthwindContext())
+            {
+                dgwProduct.DataSource = context.Products.ToList();
+            }
+        }
+
+        private void ListCategories()
+        {
+            using (NorthwindContext context = new NorthwindContext())
+            {
+                cbxCategory.DataSource = context.Categories.ToList();
+                cbxCategory.DisplayMember = "CategoryName";
+                cbxCategory.ValueMember = "CategoryId";
+            }
+        }
+
+        private void ListProductsByCategories(int categoryId)
+        {
+            using (NorthwindContext context = new NorthwindContext())
+            {
+                dgwProduct.DataSource = context.Products.Where(p=>p.CategoryId==categoryId).ToList();
+            }
+        }
+
+        private void ListProductsByProductName(string productName)
+        {
+            using (NorthwindContext context = new NorthwindContext())
+            {
+                dgwProduct.DataSource = context.Products.Where(p => p.ProductName.ToLower().Contains(productName.ToLower())).ToList();
+            }
+        }
     }
 }
